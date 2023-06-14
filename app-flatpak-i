@@ -1,0 +1,109 @@
+#!/bin/bash
+
+release_file=/etc/os-release
+
+function install_flatpak_apps() {
+        echo "Installing apps..."
+
+	# calculator
+	echo "SpeedCrunch"
+	$(which flatpak) -y install flathub org.speedcrunch.SpeedCrunch
+
+	# clipboard manager
+	echo "CopyQ"
+	$(which flatpak) -y install flathub com.github.hluk.copyq
+
+	# password manager
+	echo "KeePassXC"
+	$(which flatpak) -y install flathub org.keepassxc.KeePassXC 
+
+	# LibreOffice
+	echo "LibreOffice"
+	$(which flatpak) -y install flathub org.libreoffice.LibreOffice
+
+	# color picker
+	echo "Pick"
+	$(which flatpak) -y install flathub org.kryogenix.Pick
+
+	# on-screen ruler
+	echo "KRuler"
+	$(which flatpak) -y install flathub org.kde.kruler
+
+	# image viewer
+	echo "nomacs"
+	$(which flatpak) -y install flathub org.nomacs.ImageLounge
+
+	# rastor graphics editor
+	echo "Gimp"
+	$(which flatpak) -y install flathub org.gimp.GIMP
+
+	# vector graphics editor
+	echo "Inkscape"
+	$(which flatpak) -y install flathub org.inkscape.Inkscape
+
+	# email client
+	echo "Thunderbird"
+	$(which flatpak) -y install flathub org.mozilla.Thunderbird
+
+	# google chrome
+	echo "Google Chrome"
+	$(which flatpak) -y install flathub com.google.Chrome
+
+	# mozilla firefox
+	echo "Mozilla Firefox"
+	$(which flatpak) -y install flathub org.mozilla.firefox
+
+	# microsoft edge
+	echo "Microsoft Edge"
+	$(which flatpak) -y install flathub com.microsoft.Edge
+
+	# opera
+	echo "Opera"
+	$(which flatpak) -y install flathub com.opera.Opera
+
+	# document viewer
+	echo "Okular"
+	$(which flatpak) -y install flathub org.kde.okular
+
+	# figma wrapper
+	echo "Figma"
+	$(which flatpak) -y install flathub io.github.Figma_Linux.figma_linux
+
+	# e-books manager
+	echo "calibre"
+	$(which flatpak) -y install flathub com.calibre_ebook.calibre 
+
+	# proton mail bridge
+	echo "Proton Mail Bridge"
+	$(which flatpak) -y install flathub ch.protonmail.protonmail-bridge
+
+	# visual studio code
+	echo "Visual Studio Code"
+	$(which flatpak) -y install flathub com.visualstudio.code 
+
+	# qbittorrent
+	echo "qBittorrent"
+	$(which flatpak) -y install flathub org.qbittorrent.qBittorrent 
+
+}
+
+if command -v flatpak > /dev/null 2>&1
+then
+        echo "Flatpak is installed."
+        install_flatpak_apps
+else
+        echo "Flatpak isn't installed."
+        echo "Installation..."
+
+        if grep -q "Ubuntu" $release_file
+        then
+                yes | sudo apt install flatpak
+        fi
+
+        echo "Installation completed."
+        echo "Adding the Flathub repository..."
+
+        $(which flatpak) remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+        install_flatpak_apps
+fi
