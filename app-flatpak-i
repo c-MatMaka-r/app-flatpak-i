@@ -1,109 +1,124 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 release_file=/etc/os-release
 
 function install_flatpak_apps() {
-        echo "Installing apps..."
+  echo "Installing apps..."
 
 	# calculator
 	echo "SpeedCrunch"
-	$(which flatpak) -y install flathub org.speedcrunch.SpeedCrunch
+	flatpak -y install flathub org.speedcrunch.SpeedCrunch
 
 	# clipboard manager
 	echo "CopyQ"
-	$(which flatpak) -y install flathub com.github.hluk.copyq
+	flatpak -y install flathub com.github.hluk.copyq
 
 	# password manager
 	echo "KeePassXC"
-	$(which flatpak) -y install flathub org.keepassxc.KeePassXC 
+	flatpak -y install flathub org.keepassxc.KeePassXC 
 
 	# LibreOffice
 	echo "LibreOffice"
-	$(which flatpak) -y install flathub org.libreoffice.LibreOffice
+	flatpak -y install flathub org.libreoffice.LibreOffice
 
 	# color picker
 	echo "Pick"
-	$(which flatpak) -y install flathub org.kryogenix.Pick
+	flatpak -y install flathub org.kryogenix.Pick
 
 	# on-screen ruler
 	echo "KRuler"
-	$(which flatpak) -y install flathub org.kde.kruler
+	flatpak -y install flathub org.kde.kruler
 
 	# image viewer
 	echo "nomacs"
-	$(which flatpak) -y install flathub org.nomacs.ImageLounge
+	flatpak -y install flathub org.nomacs.ImageLounge
 
 	# rastor graphics editor
 	echo "Gimp"
-	$(which flatpak) -y install flathub org.gimp.GIMP
+	flatpak -y install flathub org.gimp.GIMP
 
 	# vector graphics editor
 	echo "Inkscape"
-	$(which flatpak) -y install flathub org.inkscape.Inkscape
+	flatpak -y install flathub org.inkscape.Inkscape
 
 	# email client
 	echo "Thunderbird"
-	$(which flatpak) -y install flathub org.mozilla.Thunderbird
+	flatpak -y install flathub org.mozilla.Thunderbird
 
 	# google chrome
 	echo "Google Chrome"
-	$(which flatpak) -y install flathub com.google.Chrome
+	flatpak -y install flathub com.google.Chrome
 
 	# mozilla firefox
 	echo "Mozilla Firefox"
-	$(which flatpak) -y install flathub org.mozilla.firefox
+	flatpak -y install flathub org.mozilla.firefox
 
 	# microsoft edge
 	echo "Microsoft Edge"
-	$(which flatpak) -y install flathub com.microsoft.Edge
+	flatpak -y install flathub com.microsoft.Edge
 
 	# opera
 	echo "Opera"
-	$(which flatpak) -y install flathub com.opera.Opera
+	flatpak -y install flathub com.opera.Opera
 
 	# document viewer
 	echo "Okular"
-	$(which flatpak) -y install flathub org.kde.okular
+	flatpak -y install flathub org.kde.okular
 
 	# figma wrapper
 	echo "Figma"
-	$(which flatpak) -y install flathub io.github.Figma_Linux.figma_linux
+	flatpak -y install flathub io.github.Figma_Linux.figma_linux
 
 	# e-books manager
 	echo "calibre"
-	$(which flatpak) -y install flathub com.calibre_ebook.calibre 
+	flatpak -y install flathub com.calibre_ebook.calibre 
 
 	# proton mail bridge
 	echo "Proton Mail Bridge"
-	$(which flatpak) -y install flathub ch.protonmail.protonmail-bridge
+	flatpak -y install flathub ch.protonmail.protonmail-bridge
 
 	# visual studio code
 	echo "Visual Studio Code"
-	$(which flatpak) -y install flathub com.visualstudio.code 
+	flatpak -y install flathub com.visualstudio.code 
 
 	# qbittorrent
 	echo "qBittorrent"
-	$(which flatpak) -y install flathub org.qbittorrent.qBittorrent 
-
+	flatpak -y install flathub org.qbittorrent.qBittorrent 
 }
+
+# if not root do nothing
+if [[ $EUID -ne 0 ]]; then
+  echo "Root privileges required."
+  exit 1
+fi
+
+# universal script for upgrade eg. apt
+if ! command -v package-man-u > /dev/null 2>&1
+then
+  curl -O "$pman_i_url"
+  chmod +x "$pman_i_name"
+  ./"$pman_i_name"
+  rm ./"$pman_i_name"
+fi
+
+package-man-u
 
 if command -v flatpak > /dev/null 2>&1
 then
         echo "Flatpak is installed."
-        install_flatpak_apps
 else
         echo "Flatpak isn't installed."
         echo "Installation..."
 
         if grep -q "Ubuntu" $release_file
         then
-                yes | sudo apt install flatpak
+            apt -y install flatpak
         fi
 
         echo "Installation completed."
-        echo "Adding the Flathub repository..."
+        echo "Adding Flathub repository..."
 
-        $(which flatpak) remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-        install_flatpak_apps
+        flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 fi
+
+install_flatpak_apps
